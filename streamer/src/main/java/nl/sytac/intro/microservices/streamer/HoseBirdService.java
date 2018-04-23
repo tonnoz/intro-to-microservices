@@ -14,6 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.meta.When;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
@@ -36,6 +37,8 @@ public class HoseBirdService {
     @Value("${maxQueueLength}")
     private int maxQueueLength;
 
+    private boolean done = false;
+
     private BlockingQueue<String> fetchTweets() {
         BlockingQueue<String> outMessages = new LinkedBlockingQueue<>(maxQueueLength);
         if (hoseBirdClient == null) {
@@ -48,17 +51,22 @@ public class HoseBirdService {
     public List<String> giveMeTweets() throws InterruptedException {
         List<String> tweets = new ArrayList<>();
         BlockingQueue<String> queue = fetchTweets();
-        while (!hoseBirdClient.isDone()) {
+        long tStart = System.currentTimeMillis();
+        while (!hoseBirdClient.isDone() || done) {
             String tweet = queue.take();
             tweets.add(tweet);
             log.error(tweet);
+            long now = System.currentTimeMillis();
+            if((now - tStart) / 1000.0 > 30){
+                done = true;
+            }
         }
         return tweets;
     }
 
     private void init(final BlockingQueue<String> msgQueue) {
         StatusesFilterEndpoint hosebirdEndpoint = new StatusesFilterEndpoint();
-        List<String> terms = Lists.newArrayList("trump", "api");
+        List<String> terms = Lists.newArrayList("trump");
         hosebirdEndpoint.trackTerms(terms);
         final Hosts hoseBirdHosts = new HttpHosts(Constants.USERSTREAM_HOST);
 
@@ -91,9 +99,4 @@ public class HoseBirdService {
         return hoseBirdClient.isDone();
     }
 
-//    public static void main(String[] args) {
-//        final BlockingQueue<String> outMessages = new LinkedBlockingQueue<>(maxQueueLength);
-//        HoseBirdService hsb = new HoseBirdService(outMessages);
-//        hsb.connect();
-//    }
 }
