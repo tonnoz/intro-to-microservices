@@ -14,7 +14,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.meta.When;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
@@ -37,36 +36,26 @@ public class HoseBirdService {
     @Value("${maxQueueLength}")
     private int maxQueueLength;
 
-    private boolean done = false;
-
-    private BlockingQueue<String> fetchTweets() {
-        BlockingQueue<String> outMessages = new LinkedBlockingQueue<>(maxQueueLength);
-        if (hoseBirdClient == null) {
-            init(outMessages);
-        }
-        hoseBirdClient.connect();
-        return outMessages;
-    }
-
-    public List<String> giveMeTweets() throws InterruptedException {
+    public List<String> giveMeTweets(String hashTag, Integer max, Integer timeout) throws InterruptedException {
+        BlockingQueue<String> queue = connect2TwitterAndRetrieveTweets(hashTag);
         List<String> tweets = new ArrayList<>();
-        BlockingQueue<String> queue = fetchTweets();
         long tStart = System.currentTimeMillis();
-        while (!hoseBirdClient.isDone() || done) {
+        while (!hoseBirdClient.isDone()) {
             String tweet = queue.take();
             tweets.add(tweet);
             log.error(tweet);
             long now = System.currentTimeMillis();
-            if((now - tStart) / 1000.0 > 30){
-                done = true;
+            if(tweets.size() >= max || (now - tStart) > timeout){
+                break;
             }
         }
         return tweets;
     }
 
-    private void init(final BlockingQueue<String> msgQueue) {
+    private BlockingQueue<String> connect2TwitterAndRetrieveTweets(String hashTag) {
+        BlockingQueue<String> outMessages = new LinkedBlockingQueue<>(maxQueueLength);
         StatusesFilterEndpoint hosebirdEndpoint = new StatusesFilterEndpoint();
-        List<String> terms = Lists.newArrayList("trump");
+        List<String> terms = Lists.newArrayList(hashTag);
         hosebirdEndpoint.trackTerms(terms);
         final Hosts hoseBirdHosts = new HttpHosts(Constants.USERSTREAM_HOST);
 
@@ -75,9 +64,11 @@ public class HoseBirdService {
                 .hosts(hoseBirdHosts)
                 .authentication(hoseBirdAuth)
                 .endpoint(hosebirdEndpoint)
-                .processor(new StringDelimitedProcessor(msgQueue));
+                .processor(new StringDelimitedProcessor(outMessages));
 
         hoseBirdClient = builder.build();
+        hoseBirdClient.connect();
+        return outMessages;
     }
 
     public Client getHoseBirdClient() {
