@@ -4,11 +4,11 @@ import fetch from 'node-fetch'
 const app = express()
 const registry = {}
 
-app.post("/:name/:port", function(request, response) {  
-    var name = request.params.name
-    var port = request.params.port
+app.post("/:name/:port", (request, response) => {  
+    const name = request.params.name
+    const port = request.params.port
 
-    var ports = registry[name]
+    const ports = registry[name]
     if (ports === undefined) {
         ports = []
     }
@@ -26,9 +26,9 @@ app.post("/:name/:port", function(request, response) {  
     });
 });
 
-app.get("/:name", function(request, response) {  
-    var name = request.params.name
-    var ports = registry[name]
+app.get("/:name", (request, response) => {  
+    const name = request.params.name
+    const ports = registry[name]
     if (ports === undefined) {
         response.status(404)
         response.json({
@@ -44,13 +44,13 @@ app.get("/:name", function(request, response) {  
     })
 })
 
-app.get("/", function(request, response) {  
+app.get("/", (request, response) => {  
     text = JSON.stringify(registry)
     response.write(text)
     response.end()
 })
 
-app.listen(3000, function() {                       
+app.listen(3000, () => {                       
     console.log("Registry service started on port 3000")
 })
 
