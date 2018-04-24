@@ -67,29 +67,28 @@ app.listen(3000, () => {                       
     console.log("Registry service started on port 3000")
 })
 
+const check = (item) => {
+    const ports = item.ports
+
+    return new Promise((resolve, reject) => {
+        for (const port of ports) {
+            const url = `http://localhost:${port}/ping`
+            fetch(url)
+            .catch((error) => {
+                if (error.code === 'ECONNREFUSED') {
+                    // Oh damn this port is down, reject it.
+                    reject(port)
+                }
+            })
+            .finally(() => {
+                resolve()
+            })
+        }
+    })
+}
 
 // Check every 5sec the
 setInterval(() => {
-    const check = (item) => {
-        const ports = item.ports
-
-        return new Promise((resolve, reject) => {
-            for (const port of ports) {
-                const url = `http://localhost:${port}/ping`
-                fetch(url)
-                .catch((error) => {
-                    if (error.code === 'ECONNREFUSED') {
-                        // Oh damn this port is down, reject it.
-                       reject(port)
-                    }
-                })
-                .finally(() => {
-                    resolve()
-                })
-            }
-        })
-    }
-
     for (const item of registry) {
         if (item.ports.length > 0) {
             check(item).catch((rejectedPort) => {
@@ -98,5 +97,4 @@ setInterval(() => {
             }
         )}
     }
-
 }, 5000)
