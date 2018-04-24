@@ -2,73 +2,102 @@ import express from "express"
 import fetch from 'node-fetch'
 
 const app = express()
-const registry = {}
+const registry = []
+
+const printWelcomeMessage = (name, port) => {
+    const jsonReg = JSON.stringify(registry)
+    return `Registered service ${name} at port ${port} - registry: ${jsonReg}`
+}
 
 app.post("/:name/:port", (request, response) => {  
     const name = request.params.name
     const port = request.params.port
+    let ports = []
+    let welcomeMessage
+    const filteredRegistry = registry.find(app => app.name === name)
 
-    const ports = registry[name]
-    if (ports === undefined) {
-        ports = []
+    if (!filteredRegistry) {
+        registry.push({
+            name,
+            ports: [port],
+        })
+        ports = [port]
+        welcomeMessage = printWelcomeMessage(name, port)
+    } else if (filteredRegistry.ports.indexOf(port) === -1) {
+        ports = filteredRegistry.ports
+        ports.push(port)
+        welcomeMessage = printWelcomeMessage(name, port)
     }
 
-    if (ports.indexOf(port) == -1) {
-        ports.push(port)
-        registry[name] = ports
-        console.log(`Registered service ${name} at port ${port} - registry: ${JSON.stringify(registry)}`)
+    if (welcomeMessage) {
+        console.log(welcomeMessage)
     }
 
     response.status(201);
     response.json({
         "name": name,
         "ports": ports
-    });
-});
+    })
+})
 
 app.get("/:name", (request, response) => {  
     const name = request.params.name
-    const ports = registry[name]
-    if (ports === undefined) {
+    const result = registry.find(app => app.name === name)
+
+    if (!result || result.ports === undefined || result.ports.length === 0) {
         response.status(404)
         response.json({
             "name": name,
             "error": `Service ${name} not found!`
         })
         return
-    }   
+    }
 
-    response.json({
-        "name": name,
-        "port": ports[0]
-    })
+    // TODO: Keep a counter somewhere or any other mechanism to return a
+    // different port form the list. The roundrobin stategy should fit our
+    // example.
+    response.json(result)
 })
 
-app.get("/", (request, response) => {  
-    text = JSON.stringify(registry)
-    response.write(text)
-    response.end()
+app.get("/", (request, response) => {
+    response.json(registry)
 })
 
 app.listen(3000, () => {                       
     console.log("Registry service started on port 3000")
 })
 
-setInterval(() => {
-    const check = (name, port) => {
-        const url = "http://localhost:" + port + "/ping"
-        fetch(url).then(function(res) {
-            if (res.error) {
-                registry[name] = ports.splice(index, 1)
-                console.log("Service '" + name + "' at port " + port + " is NOT working - unregistering it!!!")
-            }
-        })
-    }
 
-    for (let name in registry) {
-        const ports = registry[name]
-        for (let index = 0; index < ports.length; index++) {
-            check(name, ports[index])
+// Check every 5sec the
+setInterval(() => {
+    const check = (item) => {
+        const ports = item.ports
+
+        for (const port of ports) {
+            const url = `http://localhost:${port}/ping`
+            return new Promise(function(resolve, reject) {
+                fetch(url)
+                .then(response => {
+                    // No problems, we can check the next one.
+                    resolve()
+                })
+                .catch((error) => {
+                    if (error.code === 'ECONNREFUSED') {
+                        // Oh damn this port is down, reject it.
+                        reject(port)
+                    }
+                })
+            })
         }
     }
-}, 10000)
+
+    for (const item of registry) {
+        if (item.ports.length > 0) {
+            check(item).catch(((rejectedPort) => {
+                console.log("Service '" + item.name + "' at port " + error + " is NOT working - unregistering it!!!")
+                item.ports.splice(item.ports.indexOf(rejectedPort), 1)
+            }
+        ))}
+    }
+
+}, 5000)
