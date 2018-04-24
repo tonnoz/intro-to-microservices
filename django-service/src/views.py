@@ -11,7 +11,7 @@ def get_ping(request):
     """
     Public endpoint responding to a ping with pong! 
     """
-    print("ping reveived :)")
+    print("ping received :)")
     return Response("pong", status=status.HTTP_202_ACCEPTED)
 
 def say_hello():
