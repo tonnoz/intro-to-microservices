@@ -73,31 +73,30 @@ setInterval(() => {
     const check = (item) => {
         const ports = item.ports
 
-        for (const port of ports) {
-            const url = `http://localhost:${port}/ping`
-            return new Promise(function(resolve, reject) {
+        return new Promise((resolve, reject) => {
+            for (const port of ports) {
+                const url = `http://localhost:${port}/ping`
                 fetch(url)
-                .then(response => {
-                    // No problems, we can check the next one.
-                    resolve()
-                })
                 .catch((error) => {
                     if (error.code === 'ECONNREFUSED') {
                         // Oh damn this port is down, reject it.
-                        reject(port)
+                       reject(port)
                     }
                 })
-            })
-        }
+                .finally(() => {
+                    resolve()
+                })
+            }
+        })
     }
 
     for (const item of registry) {
         if (item.ports.length > 0) {
-            check(item).catch(((rejectedPort) => {
-                console.log("Service '" + item.name + "' at port " + error + " is NOT working - unregistering it!!!")
+            check(item).catch((rejectedPort) => {
+                console.log("Service '" + item.name + "' at port " + rejectedPort + " is NOT working - unregistering it!!!")
                 item.ports.splice(item.ports.indexOf(rejectedPort), 1)
             }
-        ))}
+        )}
     }
 
 }, 5000)
