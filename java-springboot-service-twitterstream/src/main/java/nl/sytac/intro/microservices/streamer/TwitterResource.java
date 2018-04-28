@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping(value = "/tweet", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-public class TwitterEndpoint {
+public class TwitterResource {
 
     @Autowired
     private HoseBirdService hoseBirdService;
