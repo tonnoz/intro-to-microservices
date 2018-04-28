@@ -1,4 +1,10 @@
 *.properties
+django-service-instagram/bin/
+django-service-instagram/include/
+django-service-instagram/lib/
+django-service-instagram/local/
+django-service-instagram/pip-selfcheck.json
+django-service-instagram/share/
 
 .idea
 
