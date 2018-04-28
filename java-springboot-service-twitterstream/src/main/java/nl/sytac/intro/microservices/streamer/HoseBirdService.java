@@ -1,6 +1,5 @@
 package nl.sytac.intro.microservices.streamer;
 
-import com.google.common.collect.Lists;
 import com.twitter.hbc.ClientBuilder;
 import com.twitter.hbc.core.Client;
 import com.twitter.hbc.core.Constants;
@@ -19,11 +18,12 @@ import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
+import static java.util.Collections.singletonList;
+
 @Service
 @Slf4j
 public class HoseBirdService {
 
-    private Client hoseBirdClient;
 
     @Value("${consumerKey}")
     private String consumerKey;
@@ -36,58 +36,58 @@ public class HoseBirdService {
     @Value("${maxQueueLength}")
     private int maxQueueLength;
 
-    public List<String> giveMeTweets(String hashTag, Integer max, Integer timeout) throws InterruptedException {
-        BlockingQueue<String> queue = connect2TwitterAndRetrieveTweets(hashTag);
-        List<String> tweets = new ArrayList<>();
-        long tStart = System.currentTimeMillis();
-        while (!hoseBirdClient.isDone()) {
-            String tweet = queue.take();
+    private BlockingQueue<String> outMessages;
+
+    private Client hoseBirdClient;
+
+    private boolean initialized = false;
+
+    public List<String> giveMeTweets(String hashTag, Integer maxTweets, Integer timeout) throws InterruptedException {
+        if(!initialized){
+            init(hashTag);
+        }
+        hoseBirdClient.connect();
+        final List<String> tweets = new ArrayList<>();
+        final long tStart = System.currentTimeMillis();
+        long now = System.currentTimeMillis();
+        while (!hoseBirdClient.isDone() && sizeCondition(maxTweets, tweets) && timeCondition(timeout, tStart, now)) {
+            final String tweet = outMessages.take();
             tweets.add(tweet);
-            log.error(tweet);
-            long now = System.currentTimeMillis();
-            if(tweets.size() >= max || (now - tStart) > timeout){
-                break;
-            }
+            log.info(tweet);
+            now = System.currentTimeMillis();
+            Thread.sleep(1000);
         }
         return tweets;
     }
 
-    private BlockingQueue<String> connect2TwitterAndRetrieveTweets(String hashTag) {
-        BlockingQueue<String> outMessages = new LinkedBlockingQueue<>(maxQueueLength);
-        StatusesFilterEndpoint hosebirdEndpoint = new StatusesFilterEndpoint();
-        List<String> terms = Lists.newArrayList(hashTag);
-        hosebirdEndpoint.trackTerms(terms);
-        final Hosts hoseBirdHosts = new HttpHosts(Constants.USERSTREAM_HOST);
+    public boolean init(String hashTag) {
+        try{
+            final Hosts hosts = new HttpHosts(Constants.USERSTREAM_HOST);
+            final Authentication auth = new OAuth1(consumerKey, consumerSecret, token, secret);
+            final StatusesFilterEndpoint hbcEndpoint = new StatusesFilterEndpoint().trackTerms(singletonList(hashTag));
+            outMessages = new LinkedBlockingQueue<>(maxQueueLength);
 
-        final Authentication hoseBirdAuth = new OAuth1(consumerKey, consumerSecret, token, secret);
-        final ClientBuilder builder = new ClientBuilder()
-                .hosts(hoseBirdHosts)
-                .authentication(hoseBirdAuth)
-                .endpoint(hosebirdEndpoint)
-                .processor(new StringDelimitedProcessor(outMessages));
+            hoseBirdClient = new ClientBuilder()
+                .hosts(hosts)
+                .authentication(auth)
+                .endpoint(hbcEndpoint)
+                .processor(new StringDelimitedProcessor(outMessages))
+                .build();
 
-        hoseBirdClient = builder.build();
-        hoseBirdClient.connect();
-        return outMessages;
+            initialized = true;
+        }catch (Exception e){
+            log.error("error during the initialization of the service", e);
+            initialized = false;
+        }
+        return initialized;
     }
 
-    public Client getHoseBirdClient() {
-        return hoseBirdClient;
+    private boolean timeCondition(Integer timeout, long tStart, long now) {
+        return (now - tStart) <= timeout;
     }
 
-    public void connect() {
-        log.debug("Connecting");
-        hoseBirdClient.connect();
-    }
-
-    public void stop() {
-        log.debug("Stopping");
-        hoseBirdClient.stop();
-    }
-
-    public boolean isDone() {
-        log.debug("Stopping");
-        return hoseBirdClient.isDone();
+    private boolean sizeCondition(Integer max, List<String> tweets) {
+        return tweets.size() < max;
     }
 
 }
