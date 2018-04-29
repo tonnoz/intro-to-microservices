@@ -11,5 +11,5 @@ import java.util.List;
 public class TweetsWrapper {
 
     @JsonRawValue
-    List<String> tweets;
+    private List<String> tweets;
 }
