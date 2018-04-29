@@ -5,7 +5,7 @@ This microservice fetches raw data from the [Userstream]("https://userstream.twi
 
 exposed endpoint: 
 ```
-/tweets?hashtag=YOURHASHTAG&max=MAXSECONDS&timeout=TIMEOUT
+/tweets?hashtag=AN_HASHTAG&maxTweets=MAX_NR_OF_TWEETS&timeoutMsec=TIMEOUT_IN_MSEC
 ```
 
 ### Requires

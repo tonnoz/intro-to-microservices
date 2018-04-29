@@ -17,11 +17,11 @@ public class TwitterResource {
     @Autowired
     private HoseBirdService hoseBirdService;
 
-    @GetMapping(value = "/tweet", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @GetMapping(value = "/tweets", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public TweetsWrapper giveMeTweets(
                 @RequestParam(value = "hashtag") String hashTag,
-                @RequestParam(value = "max") Integer max,
-                @RequestParam(value = "timeout") Integer timeout, HttpServletRequest request
+                @RequestParam(value = "maxTweets") Integer max,
+                @RequestParam(value = "timeoutMsec") Integer timeout, HttpServletRequest request
             ) throws InterruptedException {
 
         log.info("received tweets request from {}:{}", request.getRemoteAddr(), request.getRemotePort());
