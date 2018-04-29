@@ -17,6 +17,24 @@ Jdk8, Maven
 mvn clean install
 
 ```
+
+then in your resources folder place a `application.properties` file like so:
+
+```
+consumerKey = YOURCONSUMERKEY
+consumerSecret = YOURCONSUMERSECRET
+token = YOURTOKEN
+secret = YOURSECRET
+# max expected buffer size
+maxQueueLength = 100
+```
+
+you can get your own at:
+
+https://apps.twitter.com/
+
+you will need to create a new app.
+
 ### Running
 ```sh
 mvn spring-boot:run -Dserver.port=YOUR_PORT
