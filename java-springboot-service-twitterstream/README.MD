@@ -8,7 +8,7 @@ exposed endpoint:
 /tweets?hashtag=AN_HASHTAG&maxTweets=MAX_NR_OF_TWEETS&timeoutMsec=TIMEOUT_IN_MSEC
 ```
 
-the service will fetch tweets for the specified `maxTweets` or `timeoutMsec` whatever comes first and return an array of them.
+the service will fetch tweets for the specified `hashtag` for max `maxTweets` tweets or `timeoutMsec` milliseconds whatever comes first and return them.
 
 ### Requires
 Jdk8, Maven
