@@ -37,9 +37,7 @@ public class HoseBirdService {
     private int maxQueueLength;
 
     private BlockingQueue<String> outMessages;
-
     private Client hoseBirdClient;
-
     private boolean initialized = false;
 
     public List<String> giveMeTweets(String hashTag, Integer maxTweets, Integer timeout) throws InterruptedException {

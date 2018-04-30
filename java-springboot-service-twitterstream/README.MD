@@ -27,6 +27,8 @@ token = YOURTOKEN
 secret = YOURSECRET
 # max expected buffer size
 maxQueueLength = 100
+registryPort = 3000
+seviceName = YOURSERVICENAME
 ```
 
 you can get your own at:
