@@ -31,6 +31,6 @@ public class TwitterResource {
     @GetMapping(value = "/ping", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public String ping(HttpServletRequest request){
         log.info("received ping request from {}:{}", request.getRemoteAddr(), request.getRemotePort());
-        return "pong";
+        return "pong\n";
     }
 }
