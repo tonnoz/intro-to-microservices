@@ -23,13 +23,17 @@ mvn clean install
 then in your resources folder place a `application.properties` file like so:
 
 ```
+#twitter access keys
 consumerKey = YOURCONSUMERKEY
 consumerSecret = YOURCONSUMERSECRET
 token = YOURTOKEN
 secret = YOURSECRET
+
 # max expected buffer size
 maxQueueLength = 100
+#the port where your local service discovery (registry) is running
 registryPort = 3000
+#the name of this service
 seviceName = YOURSERVICENAME
 ```
 
