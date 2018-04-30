@@ -8,6 +8,8 @@ exposed endpoint:
 /tweets?hashtag=AN_HASHTAG&maxTweets=MAX_NR_OF_TWEETS&timeoutMsec=TIMEOUT_IN_MSEC
 ```
 
+the service will fetch tweets for the specified `maxTweets` or `timeoutMsec` whatever comes first and return an array of them.
+
 ### Requires
 Jdk8, Maven
 
@@ -31,7 +33,7 @@ registryPort = 3000
 seviceName = YOURSERVICENAME
 ```
 
-you can get your own at:
+you can get your keys at:
 
 https://apps.twitter.com/
 
