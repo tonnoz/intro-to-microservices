@@ -6,7 +6,7 @@ This webservice feches data from Instagram API.
 ### Installation
 
 ```sh
-virtual env
+virtualenv env
 source ./env/bin/activate
 pip install django
 pip install djangorestframework
