@@ -11,8 +11,8 @@ import time
 APP_PORT = sys.argv[-1]
 
 CONFIG = {
-    'client_id': 'bbb7a37e74f342d18920f44486f98569',
-    'client_secret': '97887497e6724012ad205c5397478209',
+    'client_id': 'YOUT_CLIENT_ID',
+    'client_secret': 'YOUR_CLIENT_SECRET',
     'redirect_uri': 'http://localhost:%s/oauth_callback' % APP_PORT
 }
 
