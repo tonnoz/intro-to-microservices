@@ -7,6 +7,7 @@ django-service-instagram/pip-selfcheck.json
 django-service-instagram/share/
 
 .idea
+.DS_Store
 
 # Logs
 logs
@@ -71,5 +72,4 @@ env
 # next.js build output
 .next
 
-db.sqlite3
 *.pyc
