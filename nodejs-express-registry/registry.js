@@ -19,7 +19,7 @@ app.post("/:name/:port", (request, response) => {  
     if (!filteredRegistry) {
         registry.push({
             name,
-            ports: [port],
+            ports: [port]
         })
         ports = [port]
         welcomeMessage = printWelcomeMessage(name, port)

@@ -5,7 +5,7 @@ var app = express();  
 var port = (process.argv.length > 2) ? parseInt(process.argv[2],10) : 3200
 
 app.get("/ping", function(request, response) { 
-    console.log("ping received :)")
+    console.log("ping received")
     response.send("pong\n");        
 });
 
