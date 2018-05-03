@@ -31,7 +31,9 @@ app.listen(PORT, function() {                       
 /** Communicates to the registry (via a POST) on which port I am running **/
 function callRegistry() {
     console.log("informing registry that I am alive on port " + PORT);
-    rest.post(`http://localhost:${REGISTRY_PORT}/${SERVICE_NAME}/${PORT}`).end();
+    rest.post(`http://localhost:${REGISTRY_PORT}/${SERVICE_NAME}/${PORT}`).end(function (response) {
+        if(response.error) console.log(`Registry not available, trying again in ${REGISTRY_POLLING_INTERVAL_MSEC} msec`);
+    });
 }
 
 
