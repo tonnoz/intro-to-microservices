@@ -1,7 +1,7 @@
 {
   "name": "registry-microservice",
   "version": "0.1.0",
-  "author": "SYTAC - sLab",
+  "author": "Bruno Bossola, Justin Seyvecou, Tonino Catapano",
   "scripts": {
     "start": "babel-node registry.js --history-api-fallback"
   },

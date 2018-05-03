@@ -1,26 +1,34 @@
-var express = require("express");
-var rest = require('unirest');
-var app = express();  
+const express = require("express");
+const rest = require('unirest');
+const app = express();
+const port = (process.argv.length > 2) ? parseInt(process.argv[2],10) : 3200;
+const REGISTRY_POLLING_INTERVAL_MSEC = 5000;
+const REGISTRY_PORT = 3000;
 
-var port = (process.argv.length > 2) ? parseInt(process.argv[2],10) : 3200
-
-app.get("/ping", function(request, response) { 
-    console.log("ping received")
-    response.send("pong\n");        
+/** GET endpoint for Healthcheck (PING) **/
+app.get("/ping", function(request, response) {
+    console.log("ping request received from registry");
+    response.send("pong\n");
 });
 
-app.get("/", function(request, response) {  
-    var now = new Date().toISOString();   
+
+/** GET endpoint (root) for the time service **/
+app.get("/", function(request, response) {
+    var now = new Date().toISOString();
     response.json({
         time: now
     });
-});                                         
+});
 
-app.listen(port, function() {                       
+/** Booting of Express app **/
+app.listen(port, function() {
     console.log("Time service started on port "+port);
 });
 
 
+/** Communicates to the registry (via a POST) on which port I am running every
+ * REGISTRY_POLLING_INTERVAL_MSEC milliseconds **/
 setInterval(function() {
-    rest.post("http://localhost:3000/time/"+port).end();
-}, 5000);
+    console.log("informing registry that I am alive on port " + port);
+    rest.post("http://localhost:" + REGISTRY_PORT + "/time/" + port).end();
+}, REGISTRY_POLLING_INTERVAL_MSEC);
