@@ -102,7 +102,7 @@ def say_hello():
     Say Hello to the registry server. This function is called every 3sec.
     """
     while True:
-        url = 'http://localhost:3000/django/%s' % APP_PORT
+        url = 'http://localhost:3000/insta/%s' % APP_PORT
         try:
             requests.post(url, params={})
         except:

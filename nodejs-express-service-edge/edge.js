@@ -18,29 +18,35 @@ const uparse = function(data, name) {
 /** GET endpoint for the Edge service: call in parallel the rand and time service and compose the return response **/
 app.get("/", function(request, response) { 
     console.log("Request received from " + request.ip);
-    console.log("Will call \"time\" at port " + port_time)
-    console.log("Will call \"rand\" at port " + port_rand)
 
     async.parallel({
         time: function(callback) {
-            rest.get("http://localhost:"+ port_time).end(function(res) {
-                callback(null, res.body);
-            })
+            if(port_time) { //call the service only if the port is available (have been communicated from the registry)
+                rest.get("http://localhost:" + port_time).end(function (res) {
+                    callback(null, res.body);
+                });
+            }else{
+                console.warn("I was not able to call the time service since I am not aware of its running port");
+                callback(null, null);
+            }
         },
         rand: function(callback) {
-            rest.get("http://localhost:" + port_rand).end(function(res) {
-                callback(null, res.body);
-            })
+            if(port_rand) { //call the service only if the port is available (have been communicated from the registry)
+                rest.get("http://localhost:" + port_rand).end(function (res) {
+                    callback(null, res.body);
+                });
+            }else{
+                console.warn("I was not able to call the rand service since I am not aware of its running port");
+                callback(null, null);
+            }
         }
     },
     function(err, results) {
         if (!err) {
-            response.send(
-                "Hello stranger!" +
-                "\n- today is " + uparse(results.time, "time") +
-                "\n- your lucky number is " + uparse(results.rand, "number") +
-                "\n");
-            response.send();
+            const message = "Hello stranger!" +
+                (results.time ? "\n- today is " + uparse(results.time, "time") : "" ) +
+                (results.rand ? "\n- your lucky number is " + uparse(results.rand, "number") : "")+"\n";
+            response.send(message);
         } else {
             console.log(err);
             response.send("Hello stranger!\n");

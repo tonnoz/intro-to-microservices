@@ -24,24 +24,26 @@ app.post("/:name/:port", (request, response) => {
     let ports = []
     let welcomeMessage
     const service = registry.find(app => app.name === name)
-if (!service) {
-    registry.push({
-        name,
-        ports: [port]
+    if (!service) {
+        registry.push({
+            name,
+            ports: [port]
+        })
+        ports = [port]
+        welcomeMessage = formatWelcomeMessage(name, port)
+    } else if (service.ports.indexOf(port) === -1) {
+        ports = service.ports
+        ports.push(port)
+        welcomeMessage = formatWelcomeMessage(name, port)
+    }
+    if(welcomeMessage) {
+        console.log(welcomeMessage)
+    }
+    response.status(201);
+    response.json({
+        "name": name,
+        "ports": ports
     })
-    ports = [port]
-    welcomeMessage = formatWelcomeMessage(name, port)
-} else if (service.ports.indexOf(port) === -1) {
-    ports = service.ports
-    ports.push(port)
-    welcomeMessage = formatWelcomeMessage(name, port)
-}
-console.log(welcomeMessage)
-response.status(201);
-response.json({
-    "name": name,
-    "ports": ports
-})
 })
 
 /** GET endpoint that returns a good candidate port on which the requested service is running.
