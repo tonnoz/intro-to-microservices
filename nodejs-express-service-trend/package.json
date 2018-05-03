@@ -1,0 +1,13 @@
+{
+  "name": "trend-microservice",
+  "author": "Tonino Catapano",
+  "private": true,
+  "dependencies": {
+    "express": "^4.13.3",
+    "google-trends-api": "^4.6.1",
+    "unirest": "^0.4.2"
+  },
+  "scripts": {
+    "start": "node trend"
+  }
+}
