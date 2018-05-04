@@ -17,16 +17,16 @@ public class TwitterResource {
     @Autowired
     private HoseBirdService hoseBirdService;
 
-    @GetMapping(value = "/tweets", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public TweetsWrapper giveMeTweets(
-                @RequestParam(value = "hashtag") String hashTag,
-                @RequestParam(value = "maxTweets") Integer max,
-                @RequestParam(value = "timeoutMsec") Integer timeout, HttpServletRequest request
-            ) throws InterruptedException {
-
-        log.info("received tweets request from {}:{}", request.getRemoteAddr(), request.getRemotePort());
-        return new TweetsWrapper(hoseBirdService.giveMeTweets(hashTag, max, timeout));
-    }
+//    @GetMapping(value = "/tweets", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+//    public TweetsWrapper giveMeTweets(
+//                @RequestParam(value = "hashtag") String hashTag,
+//                @RequestParam(value = "maxTweets") Integer max,
+//                @RequestParam(value = "timeoutMsec") Integer timeout, HttpServletRequest request
+//            ) throws InterruptedException {
+//
+//        log.info("received tweets request from {}:{}", request.getRemoteAddr(), request.getRemotePort());
+//        return new TweetsWrapper(hoseBirdService.giveMeTweets(hashTag, max, timeout));
+//    }
 
     @GetMapping(value = "/ping", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public String ping(HttpServletRequest request){
