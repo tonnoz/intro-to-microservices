@@ -21,16 +21,20 @@ public class TwitterResource {
     private final int REGISTRY_PORT = 3000;
     private Integer redisTweetPort;
 
+    @Autowired
+    private HoseBirdService hoseBirdService;
+
     @GetMapping(value = "/tweets", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public TweetsWrapper giveMeTweets(@RequestParam(value = "hashtag") String hashtag,
-                HttpServletRequest request){
+                HttpServletRequest request) throws InterruptedException {
 
         log.info("received tweets request from {}:{}", request.getRemoteAddr(), request.getRemotePort());
         if(redisTweetPort != null) {
             final String url = "http://localhost:" + redisTweetPort + "/tweets?hashtag=" + hashtag;
             return new RestTemplate().getForObject(url,  TweetsWrapper.class);
         }
-        return null;
+        return new TweetsWrapper(hoseBirdService.giveMeTweets(hashtag));
+
     }
 
     @GetMapping(value = "/ping", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
