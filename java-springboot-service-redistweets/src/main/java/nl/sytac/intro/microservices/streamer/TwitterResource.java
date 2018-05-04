@@ -9,24 +9,24 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
 
 @RestController()
 @Slf4j
 public class TwitterResource {
 
     @Autowired
-    private HoseBirdService hoseBirdService;
+    private RedisService redisService;
 
-//    @GetMapping(value = "/tweets", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-//    public TweetsWrapper giveMeTweets(
-//                @RequestParam(value = "hashtag") String hashTag,
-//                @RequestParam(value = "maxTweets") Integer max,
-//                @RequestParam(value = "timeoutMsec") Integer timeout, HttpServletRequest request
-//            ) throws InterruptedException {
-//
-//        log.info("received tweets request from {}:{}", request.getRemoteAddr(), request.getRemotePort());
-//        return new TweetsWrapper(hoseBirdService.giveMeTweets(hashTag, max, timeout));
-//    }
+    @GetMapping(value = "/tweets", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public TweetsWrapper giveMeTweets(
+                @RequestParam(value = "hashtag") String hashtag,
+                HttpServletRequest request
+            ) throws InterruptedException, IOException {
+
+        log.info("received tweets request from {}:{}", request.getRemoteAddr(), request.getRemotePort());
+        return redisService.getTweets(hashtag);
+    }
 
     @GetMapping(value = "/ping", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public String ping(HttpServletRequest request){

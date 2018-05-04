@@ -41,6 +41,15 @@ public class HoseBirdService {
     private boolean initialized = false;
 
     public List<String> giveMeTweets(String hashTag, Integer maxTweets, Integer timeout) throws InterruptedException {
+        return getTweets(hashTag, maxTweets, timeout);
+    }
+
+    public List<String> giveMeTweets(String hashTag) throws InterruptedException {
+        return getTweets(hashTag, 50, 30000);
+    }
+
+
+    private List<String> getTweets(String hashTag, Integer maxTweets, Integer timeout) throws InterruptedException {
         init(hashTag);
         hoseBirdClient.connect();
         final List<String> tweets = new ArrayList<>();
