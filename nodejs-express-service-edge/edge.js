@@ -3,8 +3,6 @@ const async = require('async');
 const rest = require('unirest');
 const app = express();
 const RUNNING_ON_PORT = 3001;
-const SERVICES_POLLING_INTERVAL_MSEC = 5000;
-const REGISTRY_PORT = 3000;
 
 const port_time = 3200;
 const port_rand = 3300;
@@ -20,27 +18,10 @@ app.get("/", function(request, response) {
     console.log("Request received from " + request.ip);
 
     async.parallel({
-        time: function(callback) {
-            rest.get("http://localhost:" + port_time).end(function (res) {
-                callback(null, res.body);
-            });
-        },
-        rand: function(callback) {
-            rest.get("http://localhost:" + port_rand).end(function (res) {
-                callback(null, res.body);
-            });
-        }
+        //call the services that you want in parallel
     },
     function(err, results) {
-        if (!err) {
-            const message = "Hello stranger!" +
-                (results.time ? "\n- today is " + uparse(results.time, "time") : "" ) +
-                (results.rand ? "\n- your lucky number is " + uparse(results.rand, "number") : "")+"\n";
-            response.send(message);
-        } else {
-            console.log(err);
-            response.send("Hello stranger!\n");
-        }
+        //compose response and return it (response.send(..))
     });
 });
 
