@@ -1,0 +1,6 @@
+/home/tonnoz/git/intro-to-microservices/java-springboot-service-tweets/src/main/java/nl/sytac/intro/microservices/streamer/RegistryPollingService.java
+/home/tonnoz/git/intro-to-microservices/java-springboot-service-tweets/src/main/java/nl/sytac/intro/microservices/streamer/TweetsWrapper.java
+/home/tonnoz/git/intro-to-microservices/java-springboot-service-tweets/src/main/java/nl/sytac/intro/microservices/streamer/RedisService.java
+/home/tonnoz/git/intro-to-microservices/java-springboot-service-tweets/src/main/java/nl/sytac/intro/microservices/streamer/TwitterResource.java
+/home/tonnoz/git/intro-to-microservices/java-springboot-service-tweets/src/main/java/nl/sytac/intro/microservices/streamer/StreamerApplication.java
+/home/tonnoz/git/intro-to-microservices/java-springboot-service-tweets/src/main/java/nl/sytac/intro/microservices/streamer/HoseBirdService.java
