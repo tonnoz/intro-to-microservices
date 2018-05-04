@@ -1,5 +1,4 @@
 const express = require("express");
-const rest = require('unirest');
 const app = express();
 const DEFAULT_PORT = 3200;
 const PORT = (process.argv.length > 2) ? parseInt(process.argv[2],10) : DEFAULT_PORT;
