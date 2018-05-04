@@ -3,8 +3,6 @@ const async = require('async');
 const rest = require('unirest');
 const app = express();
 const RUNNING_ON_PORT = 3001;
-const SERVICES_POLLING_INTERVAL_MSEC = 5000;
-const REGISTRY_PORT = 3000;
 
 const port_time = 3200;
 const port_rand = 3300;
