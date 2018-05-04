@@ -21,32 +21,17 @@ app.get("/", function(request, response) {
 
     async.parallel({
         time: function(callback) {
-            if(port_time) { //call the service only if the port is available (have been communicated from the registry)
-                rest.get("http://localhost:" + port_time).end(function (res) {
-                    callback(null, res.body);
-                });
-            }else{
-                console.warn("I was not able to call the time service since I am not aware of its running port");
-                callback(null, null);
-            }
+             //call the service only if the port is available (have been communicated from the registry)
+
         },
         rand: function(callback) {
-            if(port_rand) { //call the service only if the port is available (have been communicated from the registry)
-                rest.get("http://localhost:" + port_rand).end(function (res) {
-                    callback(null, res.body);
-                });
-            }else{
-                console.warn("I was not able to call the rand service since I am not aware of its running port");
-                callback(null, null);
-            }
+            //call the service only if the port is available (have been communicated from the registry)
+
         }
     },
     function(err, results) {
         if (!err) {
-            const message = "Hello stranger!" +
-                (results.time ? "\n- today is " + uparse(results.time, "time") : "" ) +
-                (results.rand ? "\n- your lucky number is " + uparse(results.rand, "number") : "")+"\n";
-            response.send(message);
+           response.send("compose your response here");
         } else {
             console.log(err);
             response.send("Hello stranger!\n");
@@ -63,14 +48,7 @@ app.listen(RUNNING_ON_PORT, function() {
 /** Call the registry every SERVICES_POLLING_INTERVAL_MSEC mseconds and ask the best port where to find the time and rand service **/
 setInterval(function() {
     console.log("calling registry to determine ports for time and rand service...")
-    rest.get("http://localhost:"+ REGISTRY_PORT + "/time/").end(function(res) {
-        port_time = res.body;
-        console.log("registry replied me that the 'time service' is running at port : "+ port_time);
-    });
-
-    rest.get("http://localhost:"+ REGISTRY_PORT + "/rand/").end(function(res) {
-        port_rand = res.body;
-        console.log("registry replied me that the 'rand service' is running at port : "+ port_rand);
-    });
+   // make a series of GET requests to the registry to determine on which port the services are running
+   // and save it in the port_SERVICE_NAME variables.
 
 }, SERVICES_POLLING_INTERVAL_MSEC);
