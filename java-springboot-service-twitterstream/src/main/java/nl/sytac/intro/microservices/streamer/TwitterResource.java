@@ -27,10 +27,4 @@ public class TwitterResource {
         log.info("received tweets request from {}:{}", request.getRemoteAddr(), request.getRemotePort());
         return new TweetsWrapper(hoseBirdService.giveMeTweets(hashTag, max, timeout));
     }
-
-    @GetMapping(value = "/ping", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public String ping(HttpServletRequest request){
-        log.info("received ping request from {}:{}", request.getRemoteAddr(), request.getRemotePort());
-        return "pong\n";
-    }
 }
